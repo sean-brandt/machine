@@ -354,7 +354,7 @@ func (h *Host) generateDockerConfig(dockerPort int, caCertPath string, serverKey
 	)
 
 	switch d.DriverName() {
-	case "virtualbox", "vmwarefusion", "vmwarevsphere", "hyper-v":
+	case "virtualbox", "vmwarefusion", "vmwarevsphere", "hyper-v", "parallels":
 		daemonOpts = fmt.Sprintf("-H tcp://0.0.0.0:%d", dockerPort)
 		daemonOptsCfg = path.Join(d.GetDockerConfigDir(), "profile")
 		opts := fmt.Sprintf("%s %s", defaultDaemonOpts, daemonOpts)
