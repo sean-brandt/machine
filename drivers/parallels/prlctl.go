@@ -22,11 +22,12 @@ var (
 )
 
 var (
-	ErrMachineExist    = errors.New("machine already exists")
-	ErrMachineNotExist = errors.New("machine does not exist")
-	ErrPrlctlNotFound  = errors.New("prlctl not found")
-	prlctlCmd          = "prlctl"
-	prldisktoolCmd     = "prl_disk_tool"
+	ErrMachineExist        = errors.New("machine already exists")
+	ErrMachineNotExist     = errors.New("machine does not exist")
+	ErrPrlctlNotFound      = errors.New("prlctl not found")
+	ErrPrldisktoolNotFound = errors.New("prl_disk_tool not found")
+	prlctlCmd              = "prlctl"
+	prldisktoolCmd         = "prl_disk_tool"
 )
 
 func prlctl(args ...string) error {
@@ -86,7 +87,7 @@ func prldisktool(args ...string) error {
 	log.Debugf("executing: %v %v", prldisktoolCmd, strings.Join(args, " "))
 	if err := cmd.Run(); err != nil {
 		if ee, ok := err.(*exec.Error); ok && ee == exec.ErrNotFound {
-			return ErrPrlctlNotFound
+			return ErrPrldisktoolNotFound
 		}
 		return fmt.Errorf("%v %v failed: %v", prldisktoolCmd, strings.Join(args, " "), err)
 	}
