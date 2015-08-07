@@ -25,8 +25,10 @@ var (
 	ErrMachineExist        = errors.New("machine already exists")
 	ErrMachineNotExist     = errors.New("machine does not exist")
 	ErrPrlctlNotFound      = errors.New("prlctl not found")
+	ErrPrlsrvctlNotFound   = errors.New("prlsrvctl not found")
 	ErrPrldisktoolNotFound = errors.New("prl_disk_tool not found")
 	prlctlCmd              = "prlctl"
+	prlsrvctlCmd           = "prlsrvctl"
 	prldisktoolCmd         = "prl_disk_tool"
 )
 
@@ -76,6 +78,38 @@ func prlctlOutErr(args ...string) (string, string, error) {
 		}
 	}
 	return stdout.String(), stderr.String(), err
+}
+
+func prlsrvctl(args ...string) error {
+	cmd := exec.Command(prlsrvctlCmd, args...)
+	if os.Getenv("DEBUG") != "" {
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+	}
+	log.Debugf("executing: %v %v", prlsrvctlCmd, strings.Join(args, " "))
+	if err := cmd.Run(); err != nil {
+		if ee, ok := err.(*exec.Error); ok && ee == exec.ErrNotFound {
+			return ErrPrlsrvctlNotFound
+		}
+		return fmt.Errorf("%v %v failed: %v", prlsrvctlCmd, strings.Join(args, " "), err)
+	}
+	return nil
+}
+
+func prlctlsrvOut(args ...string) (string, error) {
+	cmd := exec.Command(prlsrvctlCmd, args...)
+	if os.Getenv("DEBUG") != "" {
+		cmd.Stderr = os.Stderr
+	}
+	log.Debugf("executing: %v %v", prlsrvctlCmd, strings.Join(args, " "))
+
+	b, err := cmd.Output()
+	if err != nil {
+		if ee, ok := err.(*exec.Error); ok && ee == exec.ErrNotFound {
+			err = ErrPrlsrvctlNotFound
+		}
+	}
+	return string(b), err
 }
 
 func prldisktool(args ...string) error {
