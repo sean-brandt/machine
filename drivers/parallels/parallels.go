@@ -170,7 +170,7 @@ func (d *Driver) Create() error {
 	log.Infof("Creating Parallels Desktop VM...")
 
 	if err := prlctl("create", d.MachineName,
-		"--distribution", "linux-2.6",
+		"--distribution", "boot2docker",
 		"--dst", d.ResolveStorePath("."),
 		"--no-hdd"); err != nil {
 		return err
