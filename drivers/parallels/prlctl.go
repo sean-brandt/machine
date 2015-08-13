@@ -14,11 +14,12 @@ import (
 
 // TODO check these
 var (
-	reVMNameUUID      = regexp.MustCompile(`"(.+)" {([0-9a-f-]+)}`)
-	reVMInfoLine      = regexp.MustCompile(`(?:"(.+)"|(.+))=(?:"(.*)"|(.*))`)
-	reColonLine       = regexp.MustCompile(`(.+):\s+(.*)`)
-	reMachineNotFound = regexp.MustCompile(`Failed to get VM config: The virtual machine could not be found..*`)
-	reMajorVersion    = regexp.MustCompile(`prlctl version (\d+)\.\d+\.\d+.*`)
+	reVMNameUUID       = regexp.MustCompile(`"(.+)" {([0-9a-f-]+)}`)
+	reVMInfoLine       = regexp.MustCompile(`(?:"(.+)"|(.+))=(?:"(.*)"|(.*))`)
+	reColonLine        = regexp.MustCompile(`(.+):\s+(.*)`)
+	reMachineNotFound  = regexp.MustCompile(`Failed to get VM config: The virtual machine could not be found..*`)
+	reMajorVersion     = regexp.MustCompile(`prlctl version (\d+)\.\d+\.\d+.*`)
+	reParallelsEdition = regexp.MustCompile(`edition="(.+)"`)
 )
 
 var (

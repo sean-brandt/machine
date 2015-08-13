@@ -136,6 +136,19 @@ func (d *Driver) PreCreateCheck() error {
 		return fmt.Errorf("Driver \"parallels\" supports only Parallels Desktop 11 and higher. You use: Parallels Desktop %d.", ver)
 	}
 
+	// Check Parallels Desktop edition
+	edit, err := d.getParallelsEdition()
+	if err != nil {
+		return err
+	}
+
+	switch edit {
+	case "pro", "business":
+		break
+	default:
+		return fmt.Errorf("Docker Machine can be used only with Parallels Desktop Pro or Business edition. You use: %s edition", edit)
+	}
+
 	return nil
 }
 
@@ -408,6 +421,25 @@ func (d *Driver) getParallelsVersion() (int, error) {
 	}
 
 	return major_ver, nil
+}
+
+// Detect Parallels Desktop edition
+func (d *Driver) getParallelsEdition() (string, error) {
+	stdout, stderr, err := prlsrvctlOutErr("info", "--license")
+	if err != nil {
+		if err == ErrPrlsrvctlNotFound {
+			return "", err
+		}
+		return "", fmt.Errorf(string(stderr))
+	}
+
+	// Parse Parallels Desktop version
+	res := reParallelsEdition.FindStringSubmatch(string(stdout))
+	if res == nil {
+		return "", fmt.Errorf("Parallels Desktop Edition could not be fetched!")
+	}
+
+	return res[1], nil
 }
 
 func (d *Driver) getIPfromDHCPLease() (string, error) {
