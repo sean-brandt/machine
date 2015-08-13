@@ -228,6 +228,12 @@ func (d *Driver) Create() error {
 		return err
 	}
 
+	// Enable headless mode
+	if err := prlctl("set", d.MachineName,
+		"--startup-view", "headless"); err != nil {
+		return err
+	}
+
 	// Enable Shared Folders
 	if err := prlctl("set", d.MachineName, "--shf-host", "on"); err != nil {
 		return err
