@@ -126,22 +126,8 @@ func (d *Driver) PreCreateCheck() error {
 		return fmt.Errorf("Driver \"parallels\" works only on OS X!")
 	}
 
-	// Check prlctl binary is available
-	stdout, stderr, err := prlctlOutErr("--version")
-	if err != nil {
-		if err == ErrPrlctlNotFound {
-			return err
-		}
-		return fmt.Errorf(string(stderr))
-	}
-
 	// Check Parallels Desktop version
-	res := reMajorVersion.FindStringSubmatch(string(stdout))
-	if res == nil {
-		return fmt.Errorf("Parallels Desktop version could not be parsed: %s", stdout)
-	}
-
-	ver, err := strconv.Atoi(res[1])
+	ver, err := d.getParallelsVersion()
 	if err != nil {
 		return err
 	}
@@ -398,6 +384,30 @@ func (d *Driver) GetIP() (string, error) {
 	}
 
 	return ip, nil
+}
+
+// Detect Parallels Desktop major version
+func (d *Driver) getParallelsVersion() (int, error) {
+	stdout, stderr, err := prlctlOutErr("--version")
+	if err != nil {
+		if err == ErrPrlctlNotFound {
+			return 0, err
+		}
+		return 0, fmt.Errorf(string(stderr))
+	}
+
+	// Parse Parallels Desktop version
+	res := reMajorVersion.FindStringSubmatch(string(stdout))
+	if res == nil {
+		return 0, fmt.Errorf("Parallels Desktop version could not be fetched: %s", stdout)
+	}
+
+	major_ver, err := strconv.Atoi(res[1])
+	if err != nil {
+		return 0, err
+	}
+
+	return major_ver, nil
 }
 
 func (d *Driver) getIPfromDHCPLease() (string, error) {
