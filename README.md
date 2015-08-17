@@ -1,56 +1,100 @@
-# Docker Machine
+# Docker Machine + Parallels driver
 
-![](/docs/img/logo.png)
+This is a fork of [Docker Machine](https://github.com/docker/machine) repository
+with added support of Parallels Desktop for Mac.
+This is a temporary solution for those who want to use Docker Machine with
+Parallels Desktop today, since our Pull-Request has not been merged to upstream.
 
-Machine lets you create Docker hosts on your computer, on cloud providers, and
-inside your own data center. It creates servers, installs Docker on them, then
-configures the Docker client to talk to them.
+We expect that an official support of `parallels` driver will be available in
+Docker Machine v0.5.0, when the new plugin model will be implemented.
 
-It works a bit like this:
+## Requirements
+* OS X 10.9 of later
+* Parallels Desktop 11 Pro or Business edition.
+* Docker Client (can be installed with [Docker Toolbox](https://www.docker.com/toolbox))
+
+## Installation
+
+In order to use Docker Machine with Parallels Desktop you should install our
+custom `docker-machine` binary:
 
 ```console
-$ docker-machine create -d virtualbox dev
-Creating CA: /home/username/.docker/machine/certs/ca.pem
-Creating client certificate: /home/username/.docker/machine/certs/cert.pem
-Image cache does not exist, creating it at /home/username/.docker/machine/cache...
+$ curl -L https://github.com/Parallels/docker-machine/releases/download/parallels%2F0.4.0/docker-machine_darwin-amd64 > /usr/local/bin/docker-machine
+
+$ chmod +x /usr/local/bin/docker-machine
+```
+
+**NB!** This is a replacement for the official `docker-machine` binary. If you
+will install or update "Docker Toolbox" in the future, it could override this
+binary and you migth want to re-download it again.
+
+## Usage
+Official documentation for Docker Machine [is available here](https://docs.docker.com/machine/).
+
+To create a Parallels Desktop virtual machine for Docker purposes just run this
+command:
+
+```
+$ docker-machine create --driver=parallels prl-dev
+```
+
+Available options:
+
+ - `--parallels-boot2docker-url`: The URL of the boot2docker image.
+ - `--parallels-disk-size`: Size of disk for the host VM (in MB).
+ - `--parallels-memory`: Size of memory for the host VM (in MB).
+ - `--parallels-cpu-count`: Number of CPUs to use to create the VM (-1 to use the number of CPUs available).
+
+The `--parallels-boot2docker-url` flag takes a few different forms. By
+default, if no value is specified for this flag, Machine will check locally for
+a boot2docker ISO. If one is found, that will be used as the ISO for the
+created machine. If one is not found, the latest ISO release available on
+[boot2docker/boot2docker](https://github.com/boot2docker/boot2docker) will be
+downloaded and stored locally for future use. Note that this means you must run
+`docker-machine upgrade` deliberately on a machine if you wish to update the "cached"
+boot2docker ISO.
+
+This is the default behavior (when `--parallels-boot2docker-url=""`), but the
+option also supports specifying ISOs by the `http://` and `file://` protocols.
+
+Environment variables and default values:
+
+| CLI option                    | Environment variable        | Default                  |
+|-------------------------------|-----------------------------|--------------------------|
+| `--parallels-boot2docker-url` | `PARALLELS_BOOT2DOCKER_URL` | *Latest boot2docker url* |
+| `--parallels-cpu-count`       | `PARALLELS_CPU_COUNT`       | `1`                      |
+| `--parallels-disk-size`       | `PARALLELS_DISK_SIZE`       | `20000`                  |
+| `--parallels-memory`          | `PARALLELS_MEMORY_SIZE`     | `1024`                   |
+
+
+### Example:
+
+```console
+$ docker-machine create -d parallels prl-dev
+Creating CA: /Users/legal/.docker/machine/certs/ca.pem
+Creating client certificate: /Users/legal/.docker/machine/certs/cert.pem
+Image cache does not exist, creating it at /Users/legal/.docker/machine/cache...
 No default boot2docker iso found locally, downloading the latest release...
-Downloading https://github.com/boot2docker/boot2docker/releases/download/v1.6.2/boot2docker.iso to /home/username/.docker/machine/cache/boot2docker.iso...
-Creating VirtualBox VM...
+Downloading https://github.com/boot2docker/boot2docker/releases/download/v1.8.1/boot2docker.iso to /Users/legal/.docker/machine/cache/boot2docker.iso...
 Creating SSH key...
-Starting VirtualBox VM...
-Starting VM...
-To see how to connect Docker to this machine, run: docker-machine env dev
+Creating Parallels Desktop VM...
+Starting Parallels Desktop VM...
+Waiting for VM to come online...
+To see how to connect Docker to this machine, run: docker-machine env prl-dev
 
 $ docker-machine ls
-NAME   ACTIVE   DRIVER       STATE     URL                         SWARM
-dev    *        virtualbox   Running   tcp://192.168.99.127:2376
+NAME       ACTIVE   DRIVER       STATE     URL                         SWARM
+prl-dev    *        parallels    Running   tcp://10.211.55.3:2376
 
-$ eval "$(docker-machine env dev)"
+$ eval "$(docker-machine env prl-dev)"
 
 $ docker run busybox echo hello world
 Unable to find image 'busybox:latest' locally
-511136ea3c5a: Pull complete
-df7546f9f060: Pull complete
-ea13149945cb: Pull complete
-4986bf8c1536: Pull complete
+latest: Pulling from library/busybox
+cf2616975b4a: Pull complete
+6ce2e90b0bc7: Pull complete
+8c2e06607696: Pull complete
+Digest: sha256:df9e13f36d2d5b30c16bfbf2a6110c45ebed0bfa1ea42d357651bc6c736d5322
+Status: Downloaded newer image for busybox:latest
 hello world
-
-$ docker-machine create -d digitalocean --digitalocean-access-token=secret staging
-Creating SSH key...
-Creating Digital Ocean droplet...
-To see how to connect Docker to this machine, run: docker-machine env staging
-
-$ docker-machine ls
-NAME      ACTIVE   DRIVER         STATE     URL                          SWARM
-dev                virtualbox     Running   tcp://192.168.99.127:2376
-staging   *        digitalocean   Running   tcp://104.236.253.181:2376
-```
-
-## Installation and documentation
-
-Full documentation [is available here](https://docs.docker.com/machine/).
-
-## Contributing
-
-Want to hack on Machine? Please start with the [Contributing Guide](https://github.com/docker/machine/blob/master/CONTRIBUTING.md).
 
