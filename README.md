@@ -2,16 +2,16 @@
 
 This is a fork of [Docker Machine](https://github.com/docker/machine) repository
 with added support of Parallels Desktop for Mac.
-This is a temporary solution for those who want to use Docker Machine with
-Parallels Desktop today, since our Pull-Request has not been merged to upstream.
+This is a temporary solution for those who want to use Docker Machine v0.4.0
+with Parallels Desktop.
 
 We expect that an official support of `parallels` driver will be available in
 Docker Machine v0.5.0, when the new plugin model will be implemented.
 
 ## Requirements
 * OS X 10.9 of later
-* Parallels Desktop 11 Pro or Business edition.
-* Docker Client (can be installed with [Docker Toolbox](https://www.docker.com/toolbox))
+* [Parallels Desktop 11](http://www.parallels.com/products/desktop/) **Pro** or
+**Business** edition.
 
 ## Installation
 
@@ -68,6 +68,9 @@ Environment variables and default values:
 
 
 ### Example:
+
+_Docker Client is required to run Docker containers. It is bundled to
+[Docker Toolbox](https://www.docker.com/toolbox)_
 
 ```console
 $ docker-machine create -d parallels prl-dev
