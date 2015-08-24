@@ -19,7 +19,7 @@ In order to use Docker Machine with Parallels Desktop you should install our
 custom `docker-machine` binary:
 
 ```console
-$ curl -L https://github.com/Parallels/docker-machine/releases/download/parallels%2F0.4.0/docker-machine_darwin-amd64 > /usr/local/bin/docker-machine
+$ curl -L https://github.com/Parallels/docker-machine/releases/download/parallels%2F0.4.0-1/docker-machine_darwin-amd64 > /usr/local/bin/docker-machine
 
 $ chmod +x /usr/local/bin/docker-machine
 ```
